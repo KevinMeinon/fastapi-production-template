@@ -7,7 +7,7 @@ uv sync --all-groups
 uv run uvicorn fastapi_production_template.main:app --help >/dev/null
 uv run pytest --help >/dev/null
 uv run ruff check . --statistics >/dev/null
-uv run ty check . >/dev/null
+uv run pyrefly check . >/dev/null
 uv run tox --help >/dev/null
 
 terraform -chdir=infra/terraform-aws fmt -check
