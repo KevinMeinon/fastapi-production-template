@@ -21,6 +21,27 @@ def get_request_id() -> str | None:
     return _request_id_ctx.get()
 
 
+def _templated_path(url_path: str, template: str) -> str:
+    """Rebuild the full templated path from a URL and a (possibly mount-relative) route template.
+
+    FastAPI's newer router inclusion stores route paths relative to their router prefix
+    (e.g. ``/health`` for a route mounted at ``/api/v1``). Re-anchor the template to the
+    actual URL so metrics labels keep the full path and stay cardinality-safe.
+    """
+
+    url_parts = [part for part in url_path.split("/") if part]
+    template_parts = [part for part in template.split("/") if part]
+    offset = len(url_parts) - len(template_parts)
+    if offset < 0:
+        return url_path
+    for url_part, template_part in zip(url_parts[offset:], template_parts, strict=True):
+        if url_part != template_part and not template_part.startswith("{"):
+            return url_path
+    if not offset:
+        return template
+    return "/" + "/".join([*url_parts[:offset], *template_parts])
+
+
 class RequestIdMiddleware(BaseHTTPMiddleware):
     """Attach request id to context, response, logs, and metrics."""
 
@@ -42,7 +63,7 @@ class RequestIdMiddleware(BaseHTTPMiddleware):
             status_code = response.status_code
             route = request.scope.get("route")
             if route is not None and hasattr(route, "path"):
-                route_path = str(route.path)
+                route_path = _templated_path(request.url.path, str(route.path))
         finally:
             duration = perf_counter() - start
             self._metrics.observe(
