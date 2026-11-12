@@ -41,8 +41,8 @@ jobs:
       - name: Ruff
         run: uv run ruff check .
 
-      - name: Ty
-        run: uv run ty check .
+      - name: Pyrefly
+        run: uv run pyrefly check .
 
   tox:
     runs-on: ${{ matrix.os }}
@@ -107,7 +107,7 @@ jobs:
         run: terraform -chdir=infra/terraform-gcp validate
 
   publish-pypi:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     needs:
       - docs-smoke
       - quality

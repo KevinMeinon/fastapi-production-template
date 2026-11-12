@@ -8,9 +8,9 @@
 
 <br/>
 
-[![CI](https://img.shields.io/github/actions/workflow/status/Krytos/fastapi-production-template/ci.yml?branch=main&label=CI%2FCD&style=for-the-badge)](https://github.com/Krytos/fastapi-production-template/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/github/actions/workflow/status/Krytos/fastapi-production-template/tests.yml?branch=main&label=Tests&style=for-the-badge)](https://github.com/Krytos/fastapi-production-template/actions/workflows/tests.yml)
-[![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen?style=for-the-badge)](https://github.com/Krytos/fastapi-production-template/blob/main/pyproject.toml)
+[![CI](https://img.shields.io/github/actions/workflow/status/KevinMeinon/fastapi-production-template/ci.yml?branch=main&label=CI%2FCD&style=for-the-badge)](https://github.com/KevinMeinon/fastapi-production-template/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/github/actions/workflow/status/KevinMeinon/fastapi-production-template/tests.yml?branch=main&label=Tests&style=for-the-badge)](https://github.com/KevinMeinon/fastapi-production-template/actions/workflows/tests.yml)
+[![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen?style=for-the-badge)](https://github.com/KevinMeinon/fastapi-production-template/blob/main/pyproject.toml)
 [![PyPI](https://img.shields.io/pypi/v/fastapi-production-template?style=for-the-badge&label=PyPI)](https://pypi.org/project/fastapi-production-template/)
 
 <br/>
@@ -60,7 +60,7 @@ If your team needs a backend that ships fast and holds up — [let's talk](mailt
 | **Data layer** | SQLAlchemy async ORM + asyncpg + dependency-injected sessions |
 | **Auth** | API key middleware (`X-API-Key`) with per-route enforcement |
 | **Observability** | Structured JSON logging, request ID propagation, Prometheus-style metrics |
-| **Quality** | 100% coverage gate, Ruff linting, Ty type checking, pre-commit hooks |
+| **Quality** | 100% coverage gate, Ruff linting, Pyrefly type checking, pre-commit hooks |
 | **Infrastructure** | Terraform modules for ECR (AWS), ACR (Azure), GAR (GCP) |
 | **Dev experience** | Docker Compose with hot-reload dev profile, full local parity |
 
@@ -71,7 +71,7 @@ If your team needs a backend that ships fast and holds up — [let's talk](mailt
 - **Runtime:** Python 3.14
 - **Framework:** FastAPI + Pydantic v2 · Flask · Django
 - **Database:** PostgreSQL · SQLAlchemy async · asyncpg
-- **Tooling:** uv · Ruff · Ty · pytest · tox
+- **Tooling:** uv · Ruff · Pyrefly · pytest · tox
 - **Infrastructure:** Docker · Docker Compose · Terraform (AWS / Azure / GCP)
 - **CI/CD:** GitHub Actions
 
@@ -106,7 +106,7 @@ curl -H "X-API-Key: dev-api-key" http://localhost:8000/api/v1/documents
 ```bash
 uv run pytest          # tests + coverage
 uv run ruff check .    # linting
-uv run ty check .      # type checking
+uv run pyrefly check . # type checking
 uv run tox             # full gate
 ```
 ```bash
@@ -121,6 +121,19 @@ docker compose up --build
 # Dev profile with hot reload
 docker compose --profile dev up --build --watch api-dev postgres
 ```
+
+## Using this template
+
+Click **Use this template** on GitHub, then:
+
+1. Rename the package: `src/fastapi_production_template/` -> `src/<your_package>/`, and update
+   `name`, `description` and `authors` in `pyproject.toml` plus every import and the
+   `uvicorn <your_package>.main:app` commands (README, Dockerfile, compose.yml, CI).
+2. Delete what you do not need: unused `infra/terraform-*` stacks, the PyPI `publish-pypi` job
+   (it only runs on `v*` tags, so leaving it in place is safe), or the personal branding sections
+   in this README.
+3. Set your own secrets: `API_KEY` in `.env` / compose, real Postgres credentials.
+4. `uv sync --all-groups && uv run tox` to confirm the gates pass on your machine.
 
 ## Terraform
 ```bash

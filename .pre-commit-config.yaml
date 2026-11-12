@@ -7,9 +7,9 @@ repos:
 
   - repo: local
     hooks:
-      - id: ty-check
-        name: ty check
-        entry: uv run ty check .
+      - id: pyrefly-check
+        name: pyrefly check
+        entry: uv run pyrefly check .
         language: system
         pass_filenames: false
 
